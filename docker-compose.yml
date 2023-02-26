@@ -1,0 +1,33 @@
+version: '3.6'
+
+services:
+  web:
+    container_name: nova_website
+    build: ./app
+    restart: always
+    command: bash start.sh
+    volumes:
+      - ./app:/usr/src/app/
+    ports:
+      - "443:443"
+    env_file:
+      - ./.dev.env
+    networks:
+      - nova_bridge
+
+  rabbitmq:
+    image: rabbitmq:3.10-management-alpine
+    container_name: nova_rabbitmq
+    hostname: nova
+    env_file:
+      - ./.dev.env
+    volumes:
+      - ./rabbit/data/:/var/lib/rabbitmq/
+      - ./rabbit/log/:/var/log/rabbitmq
+    networks:
+      - nova_bridge
+
+
+networks:
+  nova_bridge:
+    driver: bridge
